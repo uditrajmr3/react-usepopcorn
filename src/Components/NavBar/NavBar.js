@@ -2,9 +2,8 @@ import { useState } from "react";
 
 import Logo from "./Logo";
 import Search from "./Search";
-import SearchStats from "./SearchStats";
 
-export default function NavBar({ movies }) {
+export default function NavBar({ children }) {
   const [query, setQuery] = useState("");
 
   function updatedQuery(e) {
@@ -15,7 +14,7 @@ export default function NavBar({ movies }) {
     <nav className="nav-bar">
       <Logo />
       <Search searchQuery={query} onChangeHandler={updatedQuery} />
-      <SearchStats movies={movies} />
+      {children}
     </nav>
   );
 }

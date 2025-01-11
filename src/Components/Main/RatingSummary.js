@@ -1,5 +1,5 @@
 const average = (arr) =>
-  arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
+  arr.reduce((acc, cur, _, arr) => acc + cur / arr.length, 0);
 
 export default function RatingSummary({ movies }) {
   const avgImdbRating = average(movies.map((movie) => movie.imdbRating));
