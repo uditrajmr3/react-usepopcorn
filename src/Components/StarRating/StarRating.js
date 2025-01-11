@@ -1,6 +1,17 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import "./StarRating.css";
 import Star from "./Star";
+
+StarRating.propTypes = {
+  ratingOf: PropTypes.number,
+  color: PropTypes.string,
+  size: PropTypes.number,
+  className: PropTypes.string,
+  messages: PropTypes.array,
+  defaultRating: PropTypes.number,
+  onSetRating: PropTypes.func,
+};
 
 export default function StarRating({
   ratingOf = 10,
