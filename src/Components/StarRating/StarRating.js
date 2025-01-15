@@ -59,11 +59,11 @@ export default function StarRating({
   };
 
   return (
-    <div className={`rating ${className}`}>
+    <div className={` ${className}`}>
       <div className="stars">{stars}</div>
-      <p style={ratingValueStyle} className="rating-value">
+      <span style={ratingValueStyle} className="rating-value">
         {updateRatingValue()}
-      </p>
+      </span>
     </div>
   );
 }

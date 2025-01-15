@@ -1,8 +1,8 @@
-export default function MovieItemWithRating({ movie }) {
+export default function MovieItemWithRating({ movie, onRemoveWatched }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>
@@ -17,6 +17,12 @@ export default function MovieItemWithRating({ movie }) {
           <span>{movie.runtime} min</span>
         </p>
       </div>
+      <button
+        className="btn-delete"
+        onClick={() => onRemoveWatched(movie.imdbID)}
+      >
+        X
+      </button>
     </li>
   );
 }
