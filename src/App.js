@@ -41,12 +41,15 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller = new AbortController();
+
       async function fetchMoviesOnMount() {
         try {
           setError("");
           setIsLoading(true);
           const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+            { signal: controller.signal }
           );
 
           // handle error here
@@ -60,9 +63,12 @@ export default function App() {
           }
 
           setMovies(data.Search);
+          setError("");
         } catch (err) {
-          setError(err.message);
-          console.log(err);
+          if (err.name !== "AbortError") {
+            setError(err.message);
+            console.log(err);
+          }
         } finally {
           setIsLoading(false);
         }
@@ -73,6 +79,10 @@ export default function App() {
         return;
       }
       fetchMoviesOnMount();
+
+      return function () {
+        controller.abort();
+      };
     },
     [query]
   );
@@ -170,6 +180,23 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
 
   useEffect(
     function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onMovieClose();
+        }
+      }
+
+      document.addEventListener("keydown", callback);
+
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onMovieClose]
+  );
+
+  useEffect(
+    function () {
       async function getMovieDetails(movieID) {
         try {
           setIsLoading(true);
@@ -189,8 +216,20 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
     [selectedId]
   );
 
+  useEffect(
+    function () {
+      if (!movie) return;
+      document.title = `Movie | ${movie?.Title || movie?.title || "Unknown"}`;
+
+      return function () {
+        document.title = "usePopcorn";
+      };
+    },
+    [movie]
+  );
+
   if (movie === null) {
-    return null;
+    return <Loader />;
   }
 
   return (
