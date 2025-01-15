@@ -17,14 +17,34 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const query = "parantha";
 
   useEffect(function () {
     async function fetchMoviesOnMount() {
-      setIsLoading(true);
-      const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=thor`);
-      const data = await res.json();
-      setMovies(data.Search);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+
+        // handle error here
+        if (!res.ok) {
+          throw new Error("Something went wrong!!");
+        }
+
+        const data = await res.json();
+        if (data.Response === "False") {
+          throw new Error("No Such Movie(s) Found!!");
+        }
+
+        setMovies(data.Search);
+      } catch (err) {
+        setError(err.message);
+        console.log(err);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMoviesOnMount();
   }, []);
@@ -40,14 +60,18 @@ export default function App() {
       <Main>
         {/* Left List Block : Shows All Movies List */}
         {/* ListBox component works as a container for MovieList component */}
-        <ListBox isLoading={isLoading}>
+        <ListBox>
           {/* MovieList component takes a function which returns the children */}
-          <MovieList
-            movies={movies}
-            renderMovie={(movie) => (
-              <MovieItem key={movie.imdbID} movie={movie} />
-            )}
-          />
+          {isLoading && <Loader />}
+          {!isLoading && error && <ErrorMessage message={error} />}
+          {!isLoading && !error && (
+            <MovieList
+              movies={movies}
+              renderMovie={(movie) => (
+                <MovieItem key={movie.imdbID} movie={movie} />
+              )}
+            />
+          )}
         </ListBox>
 
         {/* Right List Block : Shows Watch List with ratings */}
@@ -64,4 +88,10 @@ export default function App() {
     </React.Fragment>
   );
 }
-// MovieItemWithRating
+
+function ErrorMessage({ message }) {
+  return <p className="error">💣💣{message}</p>;
+}
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
