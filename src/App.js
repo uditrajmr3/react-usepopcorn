@@ -43,7 +43,7 @@ export default function App() {
     function () {
       const controller = new AbortController();
 
-      async function fetchMoviesOnMount() {
+      async function fetchMovies() {
         try {
           setError("");
           setIsLoading(true);
@@ -78,7 +78,8 @@ export default function App() {
         setError("");
         return;
       }
-      fetchMoviesOnMount();
+      resetSelectedMovie();
+      fetchMovies();
 
       return function () {
         controller.abort();
