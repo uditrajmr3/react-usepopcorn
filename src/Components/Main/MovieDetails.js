@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import StarRating from "../StarRating/StarRating";
 import Loader from "../Common/Loader";
@@ -9,14 +9,15 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
 
-  function updateUserRating(value) {
-    setUserRating(value);
-  }
-
   const isMovieAlreadyWatched = watched.some(
     (movie) => movie.imdbID === selectedId
   );
 
+  const countRef = useRef(0);
+
+  function updateUserRating(value) {
+    setUserRating(value);
+  }
   function handleAddToWatchedList() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -26,6 +27,7 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
       imdbRating: Number(movie.imdbRating),
       runtime: Number(movie.Runtime.split(" ")[0]),
       userRating: userRating,
+      countRatingDecisions: countRef.current,
     };
 
     if (!isMovieAlreadyWatched) {
@@ -36,6 +38,14 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
     onMovieClose();
   }
 
+  useEffect(
+    function () {
+      if (userRating) countRef.current += 1;
+    },
+    [userRating]
+  );
+
+  /* Unmounts the component on `Esc` press */
   useEffect(
     function () {
       function callback(e) {
@@ -53,6 +63,7 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
     [onMovieClose]
   );
 
+  /* Gets the movie details on selection */
   useEffect(
     function () {
       async function getMovieDetails(movieID) {
@@ -74,6 +85,7 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
     [selectedId]
   );
 
+  /* Sets the title for the page */
   useEffect(
     function () {
       if (!movie) return;

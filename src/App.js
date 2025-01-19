@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { tempMovieData } from "./lib/data/temp_movie_data";
+
 import NavBar from "./Components/NavBar/NavBar";
 import SearchStats from "./Components/NavBar/SearchStats";
 import Main from "./Components/Main/Main";
@@ -8,18 +8,17 @@ import MovieList from "./Components/Main/MovieList";
 import MovieItem from "./Components/Main/MovieItem";
 import RatingSummary from "./Components/Main/RatingSummary";
 import MovieItemWithRating from "./Components/Main/MovieItemWithRating";
-import { KEY } from "./lib/private/Key";
 import Loader from "./Components/Common/Loader";
 import ErrorMessage from "./Components/Common/ErrorMessage";
 import MovieDetails from "./Components/Main/MovieDetails";
+import { useMovies } from "./hooks/useMovies";
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const tempQuery = "thor";
   const [query, setQuery] = useState(tempQuery);
   const [selectedId, setSelectedId] = useState(null);
+
+  const { movies, isLoading, error } = useMovies(query /*resetSelectedMovie*/);
 
   // const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(function () {
@@ -45,55 +44,6 @@ export default function App() {
       localStorage.setItem("watched", JSON.stringify(watched));
     },
     [watched]
-  );
-
-  useEffect(
-    function () {
-      const controller = new AbortController();
-
-      async function fetchMovies() {
-        try {
-          setError("");
-          setIsLoading(true);
-          const res = await fetch(
-            `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal: controller.signal }
-          );
-
-          // handle error here
-          if (!res.ok) {
-            throw new Error("Something went wrong!!");
-          }
-
-          const data = await res.json();
-          if (data.Response === "False") {
-            throw new Error("No Such Movie(s) Found!!");
-          }
-
-          setMovies(data.Search);
-          setError("");
-        } catch (err) {
-          if (err.name !== "AbortError") {
-            setError(err.message);
-            console.log(err);
-          }
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      if (query.length < 3) {
-        setMovies(tempMovieData);
-        setError("");
-        return;
-      }
-      resetSelectedMovie();
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
   );
 
   return (
