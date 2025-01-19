@@ -27,9 +27,6 @@ export default function App() {
     return JSON.parse(storedValue);
   });
 
-  function updatedQuery(e) {
-    setQuery(e.target.value);
-  }
   function updateSelectedMovie(id) {
     setSelectedId(id === selectedId ? null : id);
   }
@@ -102,7 +99,7 @@ export default function App() {
   return (
     <React.Fragment>
       {/* NavBar component has default Logo & Search components */}
-      <NavBar query={query} updatedQuery={updatedQuery}>
+      <NavBar query={query} updatedQuery={setQuery}>
         <SearchStats movies={movies} />
       </NavBar>
 
