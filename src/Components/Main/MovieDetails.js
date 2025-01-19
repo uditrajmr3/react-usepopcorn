@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import StarRating from "../StarRating/StarRating";
 import Loader from "../Common/Loader";
 import { KEY } from "../../lib/private/Key";
+import { useKey } from "../../hooks/useKey";
 
 function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
   const [movie, setMovie] = useState(null);
@@ -46,22 +47,7 @@ function MovieDetails({ selectedId, onMovieClose, onAddWatched, watched }) {
   );
 
   /* Unmounts the component on `Esc` press */
-  useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === "Escape") {
-          onMovieClose();
-        }
-      }
-
-      document.addEventListener("keydown", callback);
-
-      return function () {
-        document.removeEventListener("keydown", callback);
-      };
-    },
-    [onMovieClose]
-  );
+  useKey("Escape", onMovieClose);
 
   /* Gets the movie details on selection */
   useEffect(
