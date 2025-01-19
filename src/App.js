@@ -12,6 +12,7 @@ import Loader from "./Components/Common/Loader";
 import ErrorMessage from "./Components/Common/ErrorMessage";
 import MovieDetails from "./Components/Main/MovieDetails";
 import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 export default function App() {
   const tempQuery = "thor";
@@ -21,10 +22,7 @@ export default function App() {
   const { movies, isLoading, error } = useMovies(query /*resetSelectedMovie*/);
 
   // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   function updateSelectedMovie(id) {
     setSelectedId(id === selectedId ? null : id);
@@ -38,13 +36,6 @@ export default function App() {
   function removeMovieFromWathcedList(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   return (
     <React.Fragment>
