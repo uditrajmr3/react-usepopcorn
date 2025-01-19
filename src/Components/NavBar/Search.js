@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useKey } from "../../hooks/useKey";
 
 export default function Search({ searchQuery, onChangeHandler }) {
